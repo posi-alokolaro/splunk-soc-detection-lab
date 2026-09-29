@@ -1,0 +1,11 @@
+index=soc_lab "<EventID>1</EventID>"
+| rex field=_raw "<Computer>(?<Computer>[^<]+)</Computer>"
+| rex field=_raw "<Data Name='User'>(?<User>[^<]+)</Data>"
+| rex field=_raw "<Data Name='Image'>(?<Image>[^<]+)</Data>"
+| rex field=_raw "<Data Name='CommandLine'>(?<CommandLine>[^<]+)</Data>"
+| rex field=_raw "<Data Name='ParentImage'>(?<ParentImage>[^<]+)</Data>"
+| rex field=_raw "<Data Name='ParentCommandLine'>(?<ParentCommandLine>[^<]+)</Data>"
+| where like(lower(Image), "%mshta.exe")
+| where like(lower(ParentImage), "%wmiprvse.exe")
+| eval Detection="MSHTA spawned by WMI"
+| table SystemTime Computer User ParentImage ParentCommandLine Image CommandLine Detection
